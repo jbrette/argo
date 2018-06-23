@@ -59,7 +59,7 @@ builder:
 
 .PHONY: cli
 cli:
-	CGO_ENABLED=0 ${PACKR_CMD} build -v -i -ldflags '${LDFLAGS}' -o ${DIST_DIR}/${ARGO_CLI_NAME} ./cmd/argo
+	CGO_ENABLED=0 ${PACKR_CMD} build -v -ldflags '${LDFLAGS}' -o ${DIST_DIR}/${ARGO_CLI_NAME} ./cmd/argo
 
 .PHONY: cli-linux
 cli-linux: builder
@@ -90,7 +90,7 @@ cli-windows: builder
 
 .PHONY: controller
 controller:
-	go build -v -i -ldflags '${LDFLAGS}' -o ${DIST_DIR}/workflow-controller ./cmd/workflow-controller
+	go build -v -ldflags '${LDFLAGS}' -o ${DIST_DIR}/workflow-controller ./cmd/workflow-controller
 
 .PHONY: cli-image
 cli-image: cli-linux
@@ -108,7 +108,7 @@ controller-image: controller-linux
 
 .PHONY: executor
 executor:
-	go build -v -i -ldflags '${LDFLAGS}' -o ${DIST_DIR}/argoexec ./cmd/argoexec
+	go build -v -ldflags '${LDFLAGS}' -o ${DIST_DIR}/argoexec ./cmd/argoexec
 
 .PHONY: executor-linux
 executor-linux: builder
