@@ -13,7 +13,8 @@ PACKR_CMD=$(shell if [ "`which packr`" ]; then echo "packr"; else echo "go run v
 BUILDER_IMAGE=argo-builder
 # NOTE: the volume mount of ${DIST_DIR}/pkg below is optional and serves only
 # to speed up subsequent builds by caching ${GOPATH}/pkg between builds.
-BUILDER_CMD=docker run --rm \
+BUILDER_CMD=sudo docker run --rm \
+  --network "host" \
   -v ${CURRENT_DIR}:/root/go/src/${PACKAGE} \
   -v ${DIST_DIR}/pkg:/root/go/pkg \
   -w /root/go/src/${PACKAGE} ${BUILDER_IMAGE}
@@ -55,7 +56,7 @@ all: cli cli-image controller-image executor-image
 
 .PHONY: builder
 builder:
-	docker build -t ${BUILDER_IMAGE} -f Dockerfile-builder .
+	sudo docker build --network "host" -t ${BUILDER_IMAGE} -f Dockerfile-builder .
 
 .PHONY: cli
 cli:
@@ -94,7 +95,7 @@ controller:
 
 .PHONY: cli-image
 cli-image: cli-linux
-	docker build -t $(IMAGE_PREFIX)argocli:$(IMAGE_TAG) -f Dockerfile-cli .
+	sudo docker build --network "host" -t $(IMAGE_PREFIX)argocli:$(IMAGE_TAG) -f Dockerfile-cli .
 	@if [ "$(DOCKER_PUSH)" = "true" ] ; then docker push $(IMAGE_PREFIX)argocli:$(IMAGE_TAG) ; fi
 
 .PHONY: controller-linux
@@ -103,7 +104,7 @@ controller-linux: builder
 
 .PHONY: controller-image
 controller-image: controller-linux
-	docker build -t $(IMAGE_PREFIX)workflow-controller:$(IMAGE_TAG) -f Dockerfile-workflow-controller .
+	sudo docker build --network "host" -t $(IMAGE_PREFIX)workflow-controller:$(IMAGE_TAG) -f Dockerfile-workflow-controller .
 	@if [ "$(DOCKER_PUSH)" = "true" ] ; then docker push $(IMAGE_PREFIX)workflow-controller:$(IMAGE_TAG) ; fi
 
 .PHONY: executor
@@ -116,7 +117,7 @@ executor-linux: builder
 
 .PHONY: executor-image
 executor-image: executor-linux
-	docker build -t $(IMAGE_PREFIX)argoexec:$(IMAGE_TAG) -f Dockerfile-argoexec .
+	sudo docker build --network "host" -t $(IMAGE_PREFIX)argoexec:$(IMAGE_TAG) -f Dockerfile-argoexec .
 	@if [ "$(DOCKER_PUSH)" = "true" ] ; then docker push $(IMAGE_PREFIX)argoexec:$(IMAGE_TAG) ; fi
 
 .PHONY: lint
